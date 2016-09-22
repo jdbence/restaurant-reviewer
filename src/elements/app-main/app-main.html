@@ -1,0 +1,189 @@
+<link rel="import" href="/bower_components/app-route/app-route.html">
+<link rel="import" href="/bower_components/app-route/app-location.html">
+<link rel="import" href="/bower_components/app-route/app-route-converter.html">
+
+<link rel="import" href="/bower_components/app-layout/app-layout.html">
+<link rel="import" href="/bower_components/app-layout/app-box/app-box.html">
+<link rel="import" href="/bower_components/font-roboto/roboto.html">
+
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="/bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="/bower_components/iron-signals/iron-signals.html">
+
+<link rel="import" href="/bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="/bower_components/paper-header-panel/paper-header-panel.html">
+<link rel="import" href="/bower_components/paper-drawer-panel/paper-drawer-panel.html">
+<link rel="import" href="/bower_components/paper-toolbar/paper-toolbar.html">
+<link rel="import" href="/bower_components/paper-material/paper-material.html">
+<link rel="import" href="/bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="/bower_components/paper-menu-button/paper-menu-button.html">
+<link rel="import" href="/bower_components/paper-item/paper-item.html">
+<link rel="import" href="/bower_components/paper-input/paper-input.html">
+
+<link rel="import" href="/bower_components/app-storage/app-localstorage/app-localstorage-document.html">
+<link rel="import" href="/bower_components/platinum-sw/platinum-sw-elements.html">
+
+<link rel="import" href="/elements/page/home/page-home.html">
+<link rel="import" href="/elements/lib/lodash.html">
+<link rel="import" href="/elements/db/db.html">
+
+<dom-module id="app-main">
+  
+  <style is="custom-style">
+    :host {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    app-header {
+      background-color: #1e88e5;
+      color: #fff;
+    }
+    app-header paper-icon-button {
+      --paper-icon-button-ink-color: white;
+    }
+    
+    iron-pages {
+      height: 100%;
+    }
+    
+    @media (min-width: 801px) {
+      .narrow-only {
+        display: none !important;
+      }
+    }
+    
+    .flex-layout {
+      @apply(--layout-horizontal);
+    }
+    .flexpage {
+      @apply(--layout-flex);
+    }
+    
+    .container {
+      height: 100%;
+    }
+    .options {
+      height: 100%;
+      overflow-y: auto;
+      width: 250px;
+    }
+    .options-stations {
+      padding: 0px 16px;
+    }
+    
+    @media only screen and (max-width: 667px) {
+      .flex-layout {
+        @apply(--layout-vertical);
+      }
+      .flexpage {
+        height: 200px;
+        width: 100%;
+        flex: none;
+      }
+      .options {
+        width: 100%;
+        height: auto;
+        overflow-y: visible;
+        order: 3;
+      }
+    }
+  </style>
+  
+  <template id="app-main">
+    <app-location route={{route}} use-hash-as-path></app-location>
+    <app-route-converter path="{{path}}" route="{{route}}" query-params="{{queryParams}}"></app-route-converter>
+    <app-route route="{{route}}" pattern="/:page" data="{{data}}" tail="{{subroute}}"></app-route>
+    <app-route route="{{subroute}}" pattern="/:key" data="{{subrouteData}}"></app-route>
+    <platinum-sw-register skip-waiting clients-claim reload-on-install
+      base-uri="{{registerURI}}"
+      on-service-worker-error="_handleSWError"
+      on-service-worker-updated="_handleSWUpdated"
+      on-service-worker-installed="_handleSWInstalled">
+      <platinum-sw-cache cache-config-file="sw-precache-config.json"></platinum-sw-cache>
+    </platinum-sw-register>
+    <!--<app-localstorage-document key="test" data="{{test}}"></app-localstorage-document>-->
+    
+    <div class="container flex-layout">
+      <div class="options">
+        
+      </div>
+      <div class="flexpage">
+        <iron-pages id="pages" attr-for-selected="data-url" selected="[[data.page]]" fallback-selection="home">
+          <page-home data-url="home" key="[[subrouteData.key]]"></page-home>
+        </iron-pages>
+      </div>
+    </div>
+    
+  </template>
+  
+  <script>
+    Polymer({
+      is: 'app-main',
+      properties: {
+        route: {
+          type: Object
+        },
+        data: {
+          type: Object,
+          value: function() {
+            return {};
+          }
+        },
+        subrouteData: {
+          type: Object
+        },
+        ready: {
+          type: Boolean,
+          value: false
+        },
+        registerURI: {
+          String: Array,
+          value: function() {
+            return window.location.href + 'bower_components/platinum-sw/';
+          }
+        }
+      },
+      ready: function() {
+        document.getElementById('skeleton').remove();
+        Polymer.dom(this).removeAttribute('unresolved');
+        
+        // kick the register
+        var sw = document.querySelector('platinum-sw-register');
+        console.log("SW: ", sw !== null);
+        if(sw){
+          sw.register();
+        }
+        
+        this.db = new DB('eatz'
+          ,['restaurant', 'restaurant_review', 'restaurant_rating', 'user']
+          ,new Schema('eatz')
+        );
+        
+        // connect local database
+        this.db.connect()
+          // .then(this._updateRestaurants.bind(this))
+          .then(function() {
+            this.set('ready', true);
+          }.bind(this));
+      },
+      
+      _handleClick: function(e) {
+        var id = e.currentTarget.getAttribute('data-dialog');
+        var dialogContainer = document.getElementById(id);
+        if (dialogContainer) {
+          dialogContainer.firstElementChild.open();
+        }
+      },
+      _handleSWError: function(e){
+        console.log('_handleSWError', e);
+      },
+      _handleSWUpdated: function(e){
+        console.log('_handleSWUpdated', e);
+      },
+      _handleSWInstalled: function(e){
+        console.log('_handleSWInstalled', e);
+      }
+    });
+  </script>
+</dom-module>

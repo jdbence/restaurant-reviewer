@@ -1,0 +1,8 @@
+{
+  "name": "restaurant-reviewer",
+  "short_name": "pt",
+  "start_url": "",
+  "display": "standalone",
+  "theme_color": "#fafafa",
+  "background_color": "#fafafa"
+}

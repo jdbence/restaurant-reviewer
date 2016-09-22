@@ -1,0 +1,63 @@
+{
+  "name": "restaurant-reviewer",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "live": "gulp live",
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jdbence/restaurant-reviewer.git"
+  },
+  "keywords": [
+    "polymer",
+    "bower",
+    "browsersync",
+    "gulp"
+  ],
+  "author": "Joshua Bence",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jdbence/restaurant-reviewer/issues"
+  },
+  "homepage": "https://github.com/jdbence/restaurant-reviewer#readme",
+  "devDependencies": {
+    "babel-plugin-transform-runtime": "^6.12.0",
+    "gulp-crisper": "^1.1.0",
+    "gulp-if": "^2.0.1"
+  },
+  "eslintConfig": {
+    "extends": "google"
+  },
+  "dependencies": {
+    "babel-eslint": "^6.1.2",
+    "babel-plugin-transform-es2015-arrow-functions": "^6.8.0",
+    "babel-preset-es2015": "^6.9.0",
+    "babel-preset-stage-0": "^6.5.0",
+    "bower": "^1.7.9",
+    "browser-sync": "^2.13.0",
+    "connect-history-api-fallback": "^1.2.0",
+    "del": "^2.2.1",
+    "es6-promise": "^3.2.1",
+    "eslint": "^3.1.1",
+    "eslint-config-google": "^0.6.0",
+    "eslint-plugin-flow-vars": "^0.5.0",
+    "glob-all": "^3.0.3",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^3.1.0",
+    "gulp-babel": "^6.1.2",
+    "gulp-cache": "^0.4.5",
+    "gulp-concat": "^2.6.0",
+    "gulp-eslint": "^3.0.1",
+    "gulp-htmlmin": "^2.0.0",
+    "gulp-preprocess": "^2.0.0",
+    "gulp-sass": "^2.3.2",
+    "gulp-sequence": "^0.4.5",
+    "gulp-sourcemaps": "^1.6.0",
+    "gulp-uglify": "^1.5.4",
+    "gulp-useref": "^3.1.0",
+    "gulp-vulcanize": "^6.1.0"
+  }
+}
